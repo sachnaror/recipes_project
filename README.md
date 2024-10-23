@@ -25,7 +25,7 @@ This Django-powered kitchen companion is here to rescue you from the depths of c
 
 ```bash
 # Clone this repo (Don't worry, it won't clone your cooking skills)
-git clone https://github.com/your-username/recipes-project.git
+git clone https://github.com/sachnaror/recipes-project.git
 
 # Enter the magical realm
 cd recipes-project
