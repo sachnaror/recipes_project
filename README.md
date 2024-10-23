@@ -56,6 +56,21 @@ DJANGO_SECRET_KEY=another_super_secret_key
 MOM_APPROVAL_RATING=100  # This one's optional but who are we kidding
 ```
 
+### Backend (`views.py`):
+- After retrieving the recipe suggestions from OpenAI, I loop over the suggestions to create a Google Image search URL for each one.
+- The URL is created by taking the recipe name and appending it to `https://www.google.com/search?tbm=isch&q=`, which opens the Google Images search page with the query.
+
+### Frontend (`index.html`):
+- I modified the loop to display the recipe name and an associated “View Images” link, which points to the Google Image search result for that recipe.
+
+### Google Image Search Link:
+- For example, if a recipe suggestion is “Aloo Gobi”, the link would look like:
+  `https://www.google.com/search?tbm=isch&q=Aloo+Gobi`.
+
+### Result:
+Now when the user submits ingredients and the AI suggests dishes, each dish will have a link to its image search on Google. This enhances the user experience by letting them see images of the dishes alongside the suggestions.
+
+
 ## 🤔 FAQ (Frequently Assumed Queries)
 
 **Q: Will this make my cooking taste better?**

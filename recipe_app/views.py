@@ -6,7 +6,6 @@ openai.api_key = 'your_openai_api_key'
 
 def index(request):
     suggestions = []
-
     if request.method == 'POST':
         ingredients = [
             request.POST.get('ingredient_1', ''),
@@ -41,4 +40,14 @@ def index(request):
         # Process the response and split it into suggestions
         suggestions = response.choices[0].text.strip().split("\n")
 
-    return render(request, 'index.html', {'suggestions': suggestions})
+        # Generate Google image search links
+        suggestion_with_images = []
+        for suggestion in suggestions:
+            recipe_name = suggestion.strip()
+            image_search_url = f"https://www.google.com/search?tbm=isch&q={recipe_name.replace(' ', '+')}"
+            suggestion_with_images.append({
+                'name': recipe_name,
+                'image_link': image_search_url
+            })
+
+    return render(request, 'index.html', {'suggestions': suggestion_with_images})

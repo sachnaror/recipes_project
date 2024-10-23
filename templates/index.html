@@ -33,7 +33,10 @@
         <h2 class="mt-5 text-center">Recipe Suggestions</h2>
         <ul class="list-group">
             {% for suggestion in suggestions %}
-            <li class="list-group-item">{{ suggestion }}</li>
+            <li class="list-group-item">
+                {{ suggestion.name }} -
+                <a href="{{ suggestion.image_link }}" target="_blank">View Images</a>
+            </li>
             {% endfor %}
         </ul>
     {% endif %}
