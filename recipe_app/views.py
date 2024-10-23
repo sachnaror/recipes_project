@@ -1,53 +1,71 @@
-import openai
 from django.shortcuts import render
+from decouple import config
+import openai
 
-# Set your OpenAI API key here
-openai.api_key = 'your_openai_api_key'
+# Set up OpenAI API key from environment variables
+openai.api_key = config('OPENAI_API_KEY')
+
+# List of disallowed ingredients (spices, water, oil, etc.)
+DISALLOWED_INGREDIENTS = ['water', 'oil', 'salt', 'pepper', 'sugar', 'cumin', 'turmeric', 'chili', 'garam masala', 'ginger', 'garlic']
+
+def get_recipe_suggestions(ingredients):
+    # Create the prompt based on the user's input ingredients
+    prompt = f"Suggest 10 recipes that can be made using the following ingredients: {', '.join(ingredients)}. " \
+             f"Provide the dish name and a short description."
+
+    # Call the OpenAI API using the new Chat API
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",  # or "gpt-4" if you have access
+        messages=[
+            {"role": "user", "content": prompt}
+        ],
+        max_tokens=150,
+        temperature=0.7,
+    )
+
+    # Extract suggestions from the API response
+    suggestions = response['choices'][0]['message']['content'].strip().split("\n")
+
+    # Generate Google Image Search URLs
+    recipes_with_images = []
+    for recipe in suggestions:
+        # Cleaning up the recipe name for better Google image search
+        recipe_name = recipe.strip()
+        image_search_url = f"https://www.google.com/search?tbm=isch&q={'+'.join(recipe_name.split())}"
+
+        # Append recipe name and Google Image URL
+        recipes_with_images.append({
+            'name': recipe_name,
+            'image_link': image_search_url
+        })
+
+    return recipes_with_images
 
 def index(request):
-    suggestions = []
+    suggestion_with_images = []  # Initialize empty suggestion list
+    ingredient_range = range(1, 11)  # This will create a range from 1 to 10
+    error_message = None  # To store validation error messages
+
     if request.method == 'POST':
+        # Collecting ingredients from POST request
         ingredients = [
-            request.POST.get('ingredient_1', ''),
-            request.POST.get('ingredient_2', ''),
-            request.POST.get('ingredient_3', ''),
-            request.POST.get('ingredient_4', ''),
-            request.POST.get('ingredient_5', ''),
-            request.POST.get('ingredient_6', ''),
-            request.POST.get('ingredient_7', ''),
-            request.POST.get('ingredient_8', ''),
-            request.POST.get('ingredient_9', ''),
-            request.POST.get('ingredient_10', '')
+            request.POST.get(f'ingredient_{i}', '').strip().lower() for i in ingredient_range
         ]
 
-        # Clean up the list and remove empty values
+        # Clean up empty ingredient values
         ingredients = [ing for ing in ingredients if ing]
 
-        # Prepare the prompt for OpenAI
-        prompt = f"Suggest 10 Indian recipes that can be made using the following ingredients: {', '.join(ingredients)}. " \
-                 f"Provide the dish name and short description."
+        # Check if there's at least one valid (non-disallowed) ingredient
+        valid_ingredients = [ing for ing in ingredients if ing not in DISALLOWED_INGREDIENTS]
 
-        # Call GPT API
-        response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=prompt,
-            max_tokens=150,
-            n=1,
-            stop=None,
-            temperature=0.7,
-        )
+        if not valid_ingredients:
+            error_message = "Please enter at least one valid main ingredient (vegetables, meat, etc.) that is not water, oil, or spices."
+        else:
+            # If valid ingredients exist, proceed with OpenAI API call
+            suggestion_with_images = get_recipe_suggestions(valid_ingredients)
 
-        # Process the response and split it into suggestions
-        suggestions = response.choices[0].text.strip().split("\n")
-
-        # Generate Google image search links
-        suggestion_with_images = []
-        for suggestion in suggestions:
-            recipe_name = suggestion.strip()
-            image_search_url = f"https://www.google.com/search?tbm=isch&q={recipe_name.replace(' ', '+')}"
-            suggestion_with_images.append({
-                'name': recipe_name,
-                'image_link': image_search_url
-            })
-
-    return render(request, 'index.html', {'suggestions': suggestion_with_images})
+    return render(request, 'index.html', {
+        'suggestions': suggestion_with_images,
+        'ingredient_range': ingredient_range,
+        'error_message': error_message
+    })
