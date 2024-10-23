@@ -42,7 +42,7 @@ python manage.py runserver
 
 ## 🎯 Prerequisites
 
-- Python 3.x (Because Python 2 is as outdated as last week's leftovers)
+- Python 3.12
 - Django (The framework, not the movie)
 - OpenAI API key (More valuable than your secret family recipes)
 - Basic cooking skills (Optional, but highly recommended)
