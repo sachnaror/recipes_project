@@ -1,9 +1,7 @@
-from django.urls import path
-from . import views
-
-app_name = 'recipe_app'
+from django.contrib import admin
+from django.urls import path, include
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('suggest/', views.suggest_recipes_api, name='suggest_recipes'),
+    path('admin/', admin.site.urls),
+    path('', include('recipe_app.urls')),
 ]
