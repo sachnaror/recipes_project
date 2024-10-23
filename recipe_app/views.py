@@ -6,7 +6,17 @@ import openai
 openai.api_key = config('OPENAI_API_KEY')
 
 # List of disallowed ingredients (spices, water, oil, etc.)
-DISALLOWED_INGREDIENTS = ['water', 'oil', 'salt', 'pepper', 'sugar', 'cumin', 'turmeric', 'chili', 'garam masala', 'ginger', 'garlic']
+DISALLOWED_INGREDIENTS = ['water', 'oil', 'salt', 'pepper', 'sugar',
+    'cumin', 'turmeric', 'chili', 'garam masala',
+    'ginger', 'garlic', 'coriander powder', 'curry leaves',
+    'bay leaves', 'cloves', 'cardamom',
+    'cinnamon', 'fennel seeds', 'mustard seeds',
+    'fenugreek seeds', 'black salt', 'tamarind',
+    'chaat masala', 'red chili flakes',
+    'lemon juice', 'lime juice',
+    'paneer', 'sesame seeds', 'poppy seeds', 'potato starch', 'vinegar',
+    'soya sauce', 'hot sauce', 'pickles', 'chutneys',
+    'fresh herbs']
 
 def get_recipe_suggestions(ingredients):
     # Create the prompt based on the user's input ingredients
@@ -59,7 +69,7 @@ def index(request):
         valid_ingredients = [ing for ing in ingredients if ing not in DISALLOWED_INGREDIENTS]
 
         if not valid_ingredients:
-            error_message = "Please enter at least one valid main ingredient (vegetables, meat, etc.) that is not water, oil, or spices."
+            error_message = "Please enter at least one valid main ingredient (vegetables, meat, etc.) that is not water, oil, or spices etc."
         else:
             # If valid ingredients exist, proceed with OpenAI API call
             suggestion_with_images = get_recipe_suggestions(valid_ingredients)

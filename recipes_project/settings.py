@@ -1,19 +1,39 @@
+import os
+from dotenv import load_dotenv
 from pathlib import Path
-from decouple import config
+
+# Load environment variables from the .env file
+load_dotenv()
 
 
-# Use the config function to get values from the .env file
-SECRET_KEY = config('SECRET_KEY')
-DEBUG = config('DEBUG', default=True, cast=bool)
-OPENAI_API_KEY = config('OPENAI_API_KEY')
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Define BASE_DIR using Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Allowed Hosts
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost').split(',')
+# Example of accessing the OpenAI API key
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
-# Application definition
+# Django settings
+SECRET_KEY = os.getenv('SECRET_KEY', 'default_secret_key')  # Example for a secret key
+DEBUG = os.getenv('DEBUG', 'False') == 'True'  # Convert to boolean
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+
+# Templates configuration
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / "templates"],  # This now works because BASE_DIR is a Path object
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -36,21 +56,21 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'recipes_project.urls'
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
+# TEMPLATES = [
+#     {
+#         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+#         'DIRS': [BASE_DIR / "templates"],
+#         'APP_DIRS': True,
+#         'OPTIONS': {
+#             'context_processors': [
+#                 'django.template.context_processors.debug',
+#                 'django.template.context_processors.request',
+#                 'django.contrib.auth.context_processors.auth',
+#                 'django.contrib.messages.context_processors.messages',
+#             ],
+#         },
+#     },
+# ]
 
 WSGI_APPLICATION = 'recipes_project.wsgi.application'
 
