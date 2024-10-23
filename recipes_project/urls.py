@@ -1,10 +1,9 @@
-from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
+from . import views
+
+app_name = 'recipe_app'
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('recipe_app.urls')),  # Root URL will show our recipe app
-
-    # If you're using django-tailwind development server
-    path("__reload__/", include("django_browser_reload.urls")),
+    path('', views.index, name='index'),
+    path('suggest/', views.suggest_recipes_api, name='suggest_recipes'),
 ]
